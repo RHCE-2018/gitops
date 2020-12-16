@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: onedev
+  labels:
+    tier: server
+spec:
+  selector:
+    matchLabels:
+      tier: server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: onedev
+      labels:
+        tier: server
+    spec:
+      containers:
+      - name: onedev
+        image: 1dev/server
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: "/opt/onedev"
+          name: onedev
+        ports:
+        - containerPort: 6610
+        - containerPort: 6611
+      initContainers:
+      - name: init
+        image: busybox
+        command: ["sh", "-c", "until nslookup mysql.onedev.svc.cluster.local; do echo waiting for mysql; sleep 2; done;"]
+      volumes:
+      - name: onedev
+        hostPath:
+          path: /onedev/server
+      serviceAccountName: onedev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql 
+  labels:
+    tier: database
+spec:
+  selector:
+    matchLabels:
+      tier: database
+  strategy: 
+    type: Recreate
+  template:
+    metadata:
+      name: mysql
+      labels:
+        tier: database
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        args:
+        - "--ignore-db-dir=lost+found"
+        env:
+        - name: MYSQL_DATABASE
+          value: onedev
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: password
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
+        readinessProbe:
+          exec:
+            command:
+            - bash 
+            - "-c" 
+            - | 
+              mysql -uroot -p$MYSQL_ROOT_PASSWORD -e 'SELECT 1'
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 1
+      volumes:
+      - name: mysql
+        persistentVolumeClaim:
+          claimName: mysql

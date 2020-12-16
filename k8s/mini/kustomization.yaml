@@ -1,0 +1,8 @@
+namespace: onedev
+images:
+- name: 1dev/server
+  newTag: 4.0.6
+bases:
+- ../base
+patchesStrategicMerge:
+- disk-settings.yaml

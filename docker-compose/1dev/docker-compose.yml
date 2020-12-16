@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+
+  1dev:
+    image: wufei0610/1dev
+#    image: 1dev/server
+    container_name: '1dev'
+    hostname: '1dev'
+    restart: always
+    ports:
+      - 6610:6610
+      - 6611:6611
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /application/1dev:/opt/onedev
+      - /etc/localtime:/etc/localtime:ro
+
+  postgres:
+    image: wufei0610/postgres
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - "5432:5432" 
+    environment:
+      - POSTGRES_DB=onedev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Sinux2020
+      - ALLOW_IP_RANGE=0.0.0.0/0
+    volumes:  
+      - /etc/localtime:/etc/localtime:ro
+      - /application/postgres/data:/var/lib/postgresql/data
+    restart: always 

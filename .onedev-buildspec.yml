@@ -1,0 +1,30 @@
+version: 1
+jobs:
+- name: qt5.9.5
+  image: docker
+  commands:
+  - docker login -u wufei0610 -p WFxfYL1314\@
+  - 'docker build -t wufei0610/qt5.9.5 ./x86-64/ubuntu16.04  '
+  - docker push wufei0610/qt5.9.5
+  retrieveSource: true
+  cloneCredential: !DefaultCredential {}
+  cpuRequirement: 250m
+  memoryRequirement: 128m
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 36000
+- name: 1dev
+  image: docker
+  commands:
+  - docker login -u wufei0610 -p WFxfYL1314\@
+  - docker build -t wufei0610/1dev ./docker-compose/1dev
+  - docker push wufei0610/1dev
+  retrieveSource: true
+  cloneCredential: !DefaultCredential {}
+  cpuRequirement: 250m
+  memoryRequirement: 128m
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600

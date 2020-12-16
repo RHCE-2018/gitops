@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  openldap:
+    image: wufei0610/opeldap:1.0
+    container_name: "openldap"
+    hostname: 'openldap'
+    restart: always
+    environment:
+      LDAP_ORGANISATION: "sinux"
+      LDAP_DOMAIN: "sinux.com"
+      LDAP_ADMIN_PASSWORD: "Sinux2020"
+      LDAP_CONFIG_PASSWORD: "Sinux2020"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /application/slapd/database:/var/lib/ldap
+      - /application/slapd/config:/etc/ldap/slapd.d
+    ports:
+      - '389:389'
+
+  phpldapadmin:
+    image: wufei0610/phpldapadmin:1.0
+    container_name: "phpldapadmin"
+    hostname: 'phpldapadmin'
+    restart: always
+    privileged: true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    depends_on: 
+      - openldap
+    links:
+      - openldap
+    environment:
+      PHPLDAPADMIN_HTTPS: "false"
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+    ports:  
+      - '8080:80'
+
+  ssp:
+    image: wufei0610/ssp:1.0
+    container_name: ssp
+    ports:
+      - 80:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /root/config.inc.php:/var/www/html/conf/config.inc.php
+    restart: always
+    depends_on: 
+      - openldap
+    links:
+      - openldap
+
+
+

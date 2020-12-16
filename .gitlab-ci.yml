@@ -1,0 +1,41 @@
+build:
+  stage: build
+  script:
+    ##- mkdir -p /home/gitlab-runner/test
+    ##- mkdir -p  /home/gitlab-runner/test
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    ##- docker build -t $CI_REGISTRY_IMAGE_WINDOWS ./x86-64/windows10_2004
+    - docker build -t $CI_REGISTRY_IMAGE_UBUNTU ./x86-64/ubuntu16.04
+    ##- docker build -t $CI_REGISTRY_IMAGE_PHYTIUM ./phytium
+    ##- docker build -t $CI_REGISTRY_IMAGE_LOONGSON ./loongson
+  tags:
+    ##- windows10
+    - ubuntu
+    ##- phytium
+    ##- loongson
+
+push:
+  stage: test
+  script:
+    ##- docker push $CI_REGISTRY_IMAGE_WINDOWS
+    - docker push $CI_REGISTRY_IMAGE_UBUNTU
+    ##- docker push $CI_REGISTRY_IMAGE_PHYTIUM
+    ##- docker push $CI_REGISTRY_IMAGE_LOONGSON
+  tags:
+    ##- windows10
+    ##- ubuntu
+    - phytium
+    ##- loongson
+
+clean:
+  stage: deploy
+  script:
+    ##- docker rmi  $CI_REGISTRY_IMAGE_WINDOWS
+    - docker rmi  $CI_REGISTRY_IMAGE_UBUNTU
+    ##- docker rmi  $CI_REGISTRY_IMAGE_PHYTIUM
+    ##- docker rmi  $CI_REGISTRY_IMAGE_LOONGSON
+  tags:
+    ##- windows10
+    - ubuntu
+    ##- phytium
+    ##- loongson

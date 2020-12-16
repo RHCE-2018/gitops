@@ -1,0 +1,278 @@
+version: "3.8"
+
+services:
+
+  1dev:
+    image: 1dev/server
+    container_name: '1dev'
+    hostname: '1dev'
+    restart: always
+    ports:
+      - 6610:6610
+      - 6611:6611
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /application/1dev:/opt/onedev
+      - /etc/localtime:/etc/localtime:ro
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=onedev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Sinux2020
+      - ALLOW_IP_RANGE=0.0.0.0/0
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /application/postgres/data:/var/lib/postgresql/data 
+    restart: always
+
+  gitlab:
+    image: 'harbor.sinux.com/sinux/gitlab-ce:1.0'
+    restart: always
+    hostname: 'gitlab'
+    container_name: 'gitlab'
+    ports:
+      - '8080:80'
+      - '20443:443'
+      - '22:22'
+    volumes:
+      - '/application/gitlab/config:/etc/gitlab'
+      - '/application/gitlab/logs:/var/log/gitlab'
+      - '/application/gitlab/data:/var/opt/gitlab'
+
+  h5ai:
+    image: harbor.sinux.com/sinux/h5ai:1.0
+    container_name: 'h5ai'
+    hostname: 'h5ai'
+    restart: always
+    ports:
+      - 88:80
+    volumes:
+      - /application/h5ai/data:/h5ai
+
+  openldap:
+    image: "harbor.sinux.com/sinux/openldap:1.0"
+    container_name: "openldap"
+    hostname: 'openldap'
+    restart: always
+    environment:
+      LDAP_ORGANISATION: "sinux"
+      LDAP_DOMAIN: "sinux.com"
+      LDAP_ADMIN_PASSWORD: "Sinux2020"
+      LDAP_CONFIG_PASSWORD: "Sinux2020"
+    volumes:
+      - /application/slapd/database:/var/lib/ldap
+      - /application/slapd/config:/etc/ldap/slapd.d
+    ports:
+      - '389:389'
+
+  phpldapadmin:
+    image: "harbor.sinux.com/sinux/phpldapadmin:1.0"
+    container_name: "phpldapadmin"
+    hostname: 'phpldapadmin'
+    restart: always
+    privileged: true
+    depends_on: 
+      - openldap
+    links:
+      - openldap
+    environment:
+      PHPLDAPADMIN_HTTPS: "false"
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+    ports:  
+      - '9010:80'
+
+  ssp:
+    image: wufei0610/ssp:1.0
+    container_name: ssp
+    ports:
+      - 8082:80
+    volumes:
+      - /root/config.inc.php:/var/www/html/conf/config.inc.php
+    restart: always
+    depends_on:
+      - openldap
+    links:
+      - openldap
+
+  sso:
+    image: jboss/keycloak
+    container_name: sso
+    ports:
+      - 443:443
+    volumes:
+      - /application/keycloak/server.crt:/etc/x509/https/tls.crt
+      - /application/keycloak/server.key:/etc/x509/https/tls.key
+    environment:
+      - KEYCLOAK_USER=admin 
+      - KEYCLOAK_PASSWORD=Sinux2020
+    restart: always
+
+  svn:
+    image: wufei0610/svn:1.0
+    container_name: "svn"
+    hostname: 'svn'
+    restart: always
+    privileged: true
+    volumes:
+      - /application/svn:/var/svn
+    ports:
+      - '3690:3690'
+
+  jira:
+    image: wufei0610/jira
+    container_name: jira
+    hostname: jira 
+    restart: always
+    environment:
+      - JVM_MINIMUM_MEMORY=4g
+      - JVM_MAXIMUM_MEMORY=8g
+      - JVM_CODE_CACHE_ARGS='-XX:InitialCodeCacheSize=1g -XX:ReservedCodeCacheSize=8g'
+      - ATL_PROXY_NAME=ck.sinux.com     
+      - ATL_PROXY_PORT=443
+      - ATL_TOMCAT_SCHEME=https
+      - ATL_TOMCAT_SECURE=true  
+    ports:
+      - "81:8080"
+    dns: 192.168.3.245
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /application/jira:/var/atlassian/application-data/jira
+    restart: always
+
+  wiki:
+    image: wufei0610/wiki
+    container_name: wiki
+    hostname: wiki
+    init: true
+    environment:
+      - JVM_MINIMUM_MEMORY=4g
+      - JVM_MAXIMUM_MEMORY=8g
+      - JVM_CODE_CACHE_ARGS='-XX:InitialCodeCacheSize=1g -XX:ReservedCodeCacheSize=8g'
+      - ATL_PROXY_NAME=wiki.sinux.com     
+      - ATL_PROXY_PORT=443
+      - ATL_TOMCAT_SCHEME=https
+      - ATL_TOMCAT_SECURE=true  
+    ports:
+      - "8090:8090"
+    dns: 192.168.3.245
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /application/confluence:/var/atlassian/application-data/confluence
+    restart: always
+
+  git:
+    image: wufei0610/bitbucket
+    container_name: git
+    hostname: git
+    environment:
+      - JVM_MINIMUM_MEMORY=4g
+      - JVM_MAXIMUM_MEMORY=8g
+      - JVM_CODE_CACHE_ARGS='-XX:InitialCodeCacheSize=1g -XX:ReservedCodeCacheSize=8g'
+      - SERVER_PROXY_NAME=git.sinux.com     
+      - SERVER_SCHEME=https
+      - SERVER_PROXY_PORT=443
+      - SERVER_SECURE=true  
+    ports:
+      - "7990:7990"
+    dns: 192.168.3.245
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /application/bitbucket:/var/atlassian/application-data/bitbucket
+    restart: always
+
+  mysql:
+    image: wufei0610/mysql5.7:1.0
+    container_name: mysql
+    environment:
+      - MYSQL_DATABASE=jira
+      - MYSQL_ROOT_PASSWORD=Sinux2020
+      - MYSQL_USER=jira
+      - MYSQL_PASSWORD=Sinux2020
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_bin']
+    ports:
+      - "3306:3306"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /application/mysql:/var/lib/mysql
+    restart: always
+
+  nextclouddb:
+    image: mariadb
+    container_name: 'mariadb'
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    ports:
+      - 3307:3306
+    volumes:
+      - /root/nextcloud/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Sinux2020
+      - MYSQL_PASSWORD=Sinux2020
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  nextcloud:
+    image: nextcloud
+    container_name: 'file'
+    ports:
+      - 81:80
+    links:
+      - nextclouddb
+    volumes:
+      - /root/nextcloud/www:/var/www/html
+    restart: always
+    environment:
+      - MYSQL_HOST=nextclouddb
+      - MYSQL_USER=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_PASSWORD=Sinux2020
+
+  onlyoffice:
+    image: onlyoffice/documentserver
+    container_name: 'onlyoffice'
+    ports:
+      - "82:80"
+    restart: always
+    volumes:
+      - /root/onlyoffice/DocumentServer/logs:/var/log/onlyoffice
+      - /root/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data
+      - /root/onlyoffice/DocumentServer/lib:/var/lib/onlyoffice
+      - /root/onlyoffice/DocumentServer/db:/var/lib/postgresql
+
+  db:
+    #image: wufei0610/postgres
+    image: postgres:10
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Sinux2020
+      - ALLOW_IP_RANGE=0.0.0.0/0
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /application/postgresql/data:/var/lib/postgresql/data 
+    restart: always
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    container_name: jenkins
+    hostname: jenkins
+    ports:
+      - 8081:8080
+      - 50000:50000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /application/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/local/bin/docker

@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  gitlab:
+    image: 'harbor.sinux.com/sinux/gitlab-ce:1.0'
+    restart: always
+    hostname: 'gitlab'
+    container_name: 'gitlab'
+    ports:
+      - '30080:80'
+      - '8443:443'
+      - '23:22'
+    volumes:
+      - '/application/gitlab/config:/etc/gitlab'
+      - '/application/gitlab/logs:/var/log/gitlab'
+      - '/application/gitlab/data:/var/opt/gitlab'
+    deploy:
+      resources:
+        limits:
+           cpus: '0.5'
+           memory: 10G
+        reservations:
+           cpus: '0.25'
+           memory: 8G
+
