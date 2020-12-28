@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv1
+  labels:
+    name: pv1
+spec:
+  nfs:
+# path 挂载路径
+    path: /nfs/data1
+# server nfs机器的ip
+    server: 192.168.3.245
+# ReadWriteOnce能以读写模式被加载到一个节点上
+#  accessModes: ["ReadWriteOnce"]
+  accessModes: ["ReadOnlyMany"]
+  capacity:
+    storage: 100Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv2
+  labels:
+    name: pv2
+spec:
+  nfs:
+    path: /nfs/data2
+    server: 192.168.3.245
+# ReadOnlyMany以只读模式加载到多个节点上
+  accessModes: ["ReadOnlyMany"]
+  capacity:
+    storage: 20Gi
