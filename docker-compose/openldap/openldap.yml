@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   openldap:
-    image: wufei0610/opeldap:1.0
+    image: wufei0610/openldap:1.0
     container_name: "openldap"
     hostname: 'openldap'
     restart: always
@@ -42,7 +42,7 @@ services:
       - 80:80
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /root/config.inc.php:/var/www/html/conf/config.inc.php
+      - /application/ssp/config.inc.php:/var/www/html/conf/config.inc.php
     restart: always
     depends_on: 
       - openldap
