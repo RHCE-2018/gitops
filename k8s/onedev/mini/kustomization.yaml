@@ -1,7 +1,7 @@
 namespace: onedev
 images:
 - name: 1dev/server
-  newTag: 4.0.6
+  newTag: 4.0.9
 bases:
 - ../base
 patchesStrategicMerge:

@@ -5,8 +5,8 @@ metadata:
   labels:
     tier: server
 spec:
-  type: LoadBalancer
- #type: NodePort
+  type: NodePort
+  #type: LoadBalancer
   ports:
   - name: http
     port: 80
@@ -26,12 +26,8 @@ metadata:
   labels:
     tier: database
 spec:
-  type: LoadBalancer
- #type: NodePort
+  type: NodePort
   ports:
-  - name: http
-    port: 3307
-    targetPort: 3306
-    protocol: TCP
+    - port: 3306
   selector:
     tier: database

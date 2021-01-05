@@ -19,8 +19,6 @@ spec:
       containers:
       - name: onedev
         image: 1dev/server
-        securityContext:
-          privileged: true
         volumeMounts:
         - mountPath: "/opt/onedev"
           name: onedev
@@ -34,7 +32,7 @@ spec:
       volumes:
       - name: onedev
         hostPath:
-          path: /onedev/server
+          path: /application/onedev
       serviceAccountName: onedev
 ---
 apiVersion: apps/v1
