@@ -1,0 +1,36 @@
+version: "3"
+services:
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: wiki
+      POSTGRES_PASSWORD: wikijsrocks
+      POSTGRES_USER: wikijs
+    volumes:
+      - /application/wikijs/data:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "20"
+
+  wiki:
+    image: requarks/wiki:2
+    depends_on:
+      - db
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: wikijs
+      DB_PASS: wikijsrocks
+      DB_NAME: wiki
+    ports:
+      - "8080:3000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "20"
+

@@ -3,17 +3,16 @@ version: "3.8"
 services:
 
   1dev:
-    image: wufei0610/1dev
-#    image: 1dev/server
-    container_name: '1dev'
-    hostname: '1dev'
+    image: 1dev/server
+    container_name: 'onedev'
+    hostname: 'onedev'
     restart: always
     ports:
       - 6610:6610
       - 6611:6611
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /application/1dev:/opt/onedev
+      - /application/onedev:/opt/onedev
       - /etc/localtime:/etc/localtime:ro
 
   postgres:

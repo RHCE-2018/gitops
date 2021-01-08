@@ -1,0 +1,25 @@
+version: "3"
+services:
+  sso:
+    image: jboss/keycloak
+    container_name: sso
+    ports:
+      - 443:8443
+    volumes:
+      - /application/keycloak/server.crt:/etc/x509/https/tls.crt
+      - /application/keycloak/server.key:/etc/x509/https/tls.key
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=Sinux2020
+      - "DB_VENDOR=postgres"
+      - "DB_ADDR=postgres"
+      - "DB_DATABASE=postgres"
+      - "DB_USER=postgres"
+      - "DB_PASSWORD=Sinux2020"
+      - "PROXY_ADDRESS_FORWARDING=true"
+  postgres:
+    image: postgres:10
+    ports:
+    - "5432:5432"
+    environment:
+    - "POSTGRES_PASSWORD=Sinux2020"

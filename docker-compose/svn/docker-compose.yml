@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+
+  svn:
+    image: wufei0610/svn:1.0
+    container_name: "svn"
+    hostname: 'svn'
+    restart: always
+    privileged: true
+    volumes:
+      - ./saslauthd.conf:/etc/saslauthd.conf
+      - /application/svn:/var/svn
+    ports:
+      - '3690:3690'
+
