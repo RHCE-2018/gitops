@@ -25,6 +25,22 @@ spec:
         ports:
         - containerPort: 6610
         - containerPort: 6611
+        env:
+        - name: hibernate_dialect
+          value: org.hibernate.dialect.MySQL5InnoDBDialect
+        - name: hibernate_connection_driver_class
+          value: com.mysql.cj.jdbc.Driver
+        - name: hibernate_connection_url
+          value: jdbc:mysql://mysql:3306/onedev?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+        - name: hibernate_connection_username
+          value: root
+        - name: hibernate_connection_password
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: password
+        - name: hibernate_hikari_maximumPoolSize
+          value: "25"
       initContainers:
       - name: init
         image: busybox
@@ -32,7 +48,10 @@ spec:
       volumes:
       - name: onedev
         hostPath:
-          path: /application/onedev
+      # 宿主上目录位置
+          path: /onedev
+      # 此字段为可选
+          type: Directory
       serviceAccountName: onedev
 ---
 apiVersion: apps/v1

@@ -1,35 +1,35 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv1
+  name: pv3
   labels:
-    name: pv1
+    name: pv3
 spec:
   nfs:
 # path 挂载路径
-    path: /nfs/data1
+    path: /nfs/data3
 # server nfs机器的ip
     server: 192.168.3.245
 # ReadWriteOnce能以读写模式被加载到一个节点上
-  accessModes: ["ReadWriteOnce"]
+  accessModes: ["ReadWriteMany"]
   persistentVolumeReclaimPolicy: "Recycle"
   #  accessModes: ["ReadOnlyMany"]
   capacity:
-    storage: 10Gi
+    storage: 100Gi
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv2
+  name: pv4
   labels:
-    name: pv2
+    name: pv4
 spec:
   nfs:
-    path: /nfs/data2
+    path: /nfs/data4
     server: 192.168.3.245
 # ReadOnlyMany以只读模式加载到多个节点上
-  accessModes: ["ReadWriteOnce"]
+  accessModes: ["ReadWriteMany"]
   persistentVolumeReclaimPolicy: "Recycle"
   #accessModes: ["ReadOnlyMany"]
   capacity:
-    storage: 10Gi
+    storage: 20Gi

@@ -6,7 +6,7 @@ metadata:
     tier: server
 spec:
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -16,4 +16,4 @@ metadata:
     tier: database
 spec:
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany

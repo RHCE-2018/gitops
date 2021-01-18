@@ -5,15 +5,17 @@ metadata:
   labels:
     tier: server
 spec:
+# type: LoadBalancer
   type: NodePort
-  #type: LoadBalancer
   ports:
   - name: http
     port: 80
+    nodePort: 30800
     targetPort: 6610
     protocol: TCP
   - name: ssh
     port: 22
+    nodePort: 30022
     targetPort: 6611
     protocol: TCP
   selector:
@@ -26,8 +28,10 @@ metadata:
   labels:
     tier: database
 spec:
+  # type: LoadBalancer
   type: NodePort
   ports:
     - port: 3306
+      nodePort: 30306
   selector:
     tier: database
