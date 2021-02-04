@@ -22,6 +22,10 @@ spec:
         volumeMounts:
         - mountPath: "/opt/onedev"
           name: onedev
+        - mountPath: "/var/run/docker.sock"
+          name: docker-sock
+        securityContext:
+          privileged: true
         ports:
         - containerPort: 6610
         - containerPort: 6611
@@ -46,6 +50,10 @@ spec:
         image: busybox
         command: ["sh", "-c", "until nslookup mysql.onedev.svc.cluster.local; do echo waiting for mysql; sleep 2; done;"]
       volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
       - name: onedev
         hostPath:
       # 宿主上目录位置

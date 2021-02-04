@@ -29,7 +29,24 @@ spec:
     server: 192.168.3.245
 # ReadOnlyMany以只读模式加载到多个节点上
   accessModes: ["ReadWriteMany"]
-  persistentVolumeReclaimPolicy: "Recycle"
+  persistentVolumeReclaimPolicy: "Retain"
   #accessModes: ["ReadOnlyMany"]
   capacity:
     storage: 20Gi
+---    
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv5
+  labels:
+    name: pv5
+spec:
+  nfs:
+    path: /nfs/data5
+    server: 192.168.3.245
+# ReadOnlyMany以只读模式加载到多个节点上
+  accessModes: ["ReadWriteMany"]
+  persistentVolumeReclaimPolicy: "Retain"
+  #accessModes: ["ReadOnlyMany"]
+  capacity:
+    storage: 50Gi
