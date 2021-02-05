@@ -1,0 +1,21 @@
+version: '3'
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce'
+    restart: always
+    hostname: 'gitlab'
+    environment:
+      TZ: 'Asia/Shanghai'
+      #GITLAB_OMNIBUS_CONFIG: |
+      #  external_url 'http://192.168.3.173:9000'
+      #  gitlab_rails['gitlab_shell_ssh_port'] = 1022
+      #  unicorn['port'] = 8888
+      #  nginx['listen_port'] = 9000
+    ports:
+      - '20443:443'
+      - '1022:22'
+    volumes:
+      - /application/gitlab/config:/etc/gitlab
+      - /application/gitlab/data:/var/opt/gitlab
+      - /application/gitlab/logs:/var/log/gitlab
+

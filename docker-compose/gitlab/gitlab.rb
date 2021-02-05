@@ -72,16 +72,16 @@ gitlab_rails['omniauth_providers'] = [
 
 # HTTPS
 letsencrypt['enable'] = false
-external_url "https://git.sinux.com"         # Must use https protocol
+external_url "https://code.ck.sinux.com"         # Must use https protocol
 nginx['redirect_http_to_https'] = true
-#nginx['ssl_certificate'] = "/etc/gitlab/server.crt"
-#nginx['ssl_certificate_key'] = "/etc/gitlab/server.key"
+nginx['ssl_certificate'] = "/etc/gitlab/ssl/server.crt"
+nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/server.key"
 # HTTP
 #external_url 'http://192.168.3.245:8080'
 #nginx['listen_port'] = 80
 # SSH
-gitlab_rails['gitlab_ssh_host'] = '192.168.3.245'
-gitlab_rails['gitlab_shell_ssh_port'] = 22
+gitlab_rails['gitlab_ssh_host'] = '192.168.3.173'
+gitlab_rails['gitlab_shell_ssh_port'] = 1022
 gitlab_rails['gitlab_shell_ssh_timeout'] = 800
 # Timezone
 gitlab_rails['time_zone'] = 'Asia/Shanghai'
@@ -110,7 +110,7 @@ gitlab_rails['ldap_enabled'] = true
 gitlab_rails['ldap_servers'] = YAML.load <<-'EOS'
   main: # 'main' is the GitLab 'provider ID' of this LDAP server
     label: 'LDAP' 
-    host: '192.168.3.245'
+    host: '192.168.3.220'
     port: 389
     uid: 'cn'
     bind_dn: 'cn=admin,dc=sinux,dc=com'
